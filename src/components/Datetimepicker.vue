@@ -131,20 +131,29 @@ export default {
       currentMonthRef.value
     );
 
+    const setrowRef = ref(setrow);
+    const allSetRef = ref(allSet);
+
+    // change changeContent still have problem
     watch(currentYearRef, (val) => {
-      console.group(`%c currentYearRef`, "color:yellow");
-      console.log(val);
-      console.groupEnd();
+      const { setrow, allSet } = changeContent(
+        week.value.length,
+        val,
+        currentMonthRef.value
+      );
+      setrowRef.value = setrow;
+      allSetRef.value = allSet;
     });
 
     watch(currentMonthRef, (val) => {
-      console.group(`%c currentMonthRef`, "color:yellow");
-      console.log(val);
-      console.groupEnd();
+      const { setrow, allSet } = changeContent(
+        week.value.length,
+        currentYearRef.value,
+        val
+      );
+      setrowRef.value = setrow;
+      allSetRef.value = allSet;
     });
-
-    const setrowRef = ref(setrow);
-    const allSetRef = ref(allSet);
 
     return {
       switchYear,
