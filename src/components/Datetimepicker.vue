@@ -3,8 +3,8 @@
     <input class="border px-2 py-1 border-gray-600 rounded" type="text" />
     <div class="calenderBorder">
       <div class="flex items-center justify-around mb-2">
-        <div class="flex items-center">
-          <div>
+        <div class="flex items-center select-none">
+          <div class="cursor-pointer" @click="switchYear('prev')">
             <svg class="w-4" viewBox="0 0 100 100">
               <polyline
                 points="65 20 30 50 65 80"
@@ -16,8 +16,8 @@
               />
             </svg>
           </div>
-          <div class="rounded px-2 py-1 shadow-lg mx-4">{{ currentYearRef }}</div>
-          <div>
+          <div class="select-none rounded px-2 py-1 shadow-lg mx-4">{{ currentYearRef }}</div>
+          <div class="cursor-pointer" @click="switchYear('next')">
             <svg class="w-3" viewBox="0 0 100 100">
               <polyline
                 points="25,10 80,50 25,90"
@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 export default {
   name: "datetimepicker",
   setup() {
@@ -113,16 +113,41 @@ export default {
         allSet,
       };
     };
+
+    const switchYear = (cmd) => {
+      if (cmd === "prev") {
+        currentYearRef.value = currentYearRef.value - 1;
+        return;
+      }
+      if (cmd === "next") {
+        currentYearRef.value = currentYearRef.value + 1;
+        return;
+      }
+    };
+
     const { setrow, allSet } = changeContent(
       week.value.length,
       currentYearRef.value,
       currentMonthRef.value
     );
 
+    watch(currentYearRef, (val) => {
+      console.group(`%c currentYearRef`, "color:yellow");
+      console.log(val);
+      console.groupEnd();
+    });
+
+    watch(currentMonthRef, (val) => {
+      console.group(`%c currentMonthRef`, "color:yellow");
+      console.log(val);
+      console.groupEnd();
+    });
+
     const setrowRef = ref(setrow);
     const allSetRef = ref(allSet);
 
     return {
+      switchYear,
       currentYearRef,
       currentMonthRef,
       currentDateRef,
