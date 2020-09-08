@@ -64,55 +64,62 @@ export default {
   name: "datetimepicker",
   setup() {
     const week = ref(["Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat."]);
-
     // get days of month
     const current = new Date();
-    const currentYear = current.getFullYear();
-    const currentMonth = current.getMonth() + 1;
-    const currentDate = current.getDate();
 
-    const currentYearRef = ref(currentYear);
-    const currentMonthRef = ref(currentMonth);
-    const currentDateRef = ref(currentDate);
+    const currentYearRef = ref(current.getFullYear());
+    const currentMonthRef = ref(current.getMonth() + 1);
+    const currentDateRef = ref(current.getDate());
 
-    // get num of month
-    const numOfPreDate = new Date(currentMonth, currentYear - 1, 0).getDate();
-    const numOfCurrentDate = new Date(currentMonth, currentYear, 0).getDate();
-    numOfPreDate, numOfCurrentDate;
-    const currentSet = Array.from(
-      { length: numOfCurrentDate },
-      (_, i) => i + 1
+    const changeContent = (weekLen, chooseYear, chooseMonth) => {
+      const numOfPreDate = new Date(chooseMonth, chooseYear - 1, 0).getDate();
+      const numOfCurrentDate = new Date(chooseMonth, chooseYear, 0).getDate();
+      const currentSet = Array.from(
+        { length: numOfCurrentDate },
+        (_, i) => i + 1
+      );
+
+      // get first day of month is on what week
+      const initDate = new Date();
+      initDate.setDate(1);
+      const firstDayWeek = initDate.getDay();
+
+      // get last day of month is on what week
+      const ultDate = new Date();
+      ultDate.setDate(numOfCurrentDate);
+
+      // calc the num of row
+      const setLen = firstDayWeek + numOfCurrentDate;
+      const rowLen = parseInt(setLen / weekLen);
+      const isRest = setLen % weekLen;
+      const setrow = isRest === 0 ? rowLen : rowLen + 1;
+
+      // get the pastSet
+      const pastMonthset = [];
+      for (let i = 0; i < firstDayWeek; i++) {
+        const pastValue = numOfPreDate - (firstDayWeek - i) + 1;
+        pastMonthset.push(pastValue);
+      }
+
+      let allSet = [...pastMonthset, ...currentSet];
+
+      if (isRest !== 0) {
+        const lastLen = Array.from({ length: isRest }, (_, i) => i + 1);
+        allSet = [...allSet, ...lastLen];
+      }
+      return {
+        firstDayWeek,
+        setrow,
+        allSet,
+      };
+    };
+    const { setrow, allSet } = changeContent(
+      week.value.length,
+      currentYearRef.value,
+      currentMonthRef.value
     );
 
-    // get first day of month is on what week
-    const initDate = new Date();
-    initDate.setDate(1);
-    const firstDayWeek = ref(initDate.getDay());
-
-    // get last day of month is on what week
-    const ultDate = new Date();
-    ultDate.setDate(numOfCurrentDate);
-
-    // calc the num of row
-    const setLen = firstDayWeek.value + numOfCurrentDate;
-    const rowLen = parseInt(setLen / week.value.length);
-    const isRest = setLen % week.value.length;
-    const setrow = isRest === 0 ? rowLen : rowLen + 1;
     const setrowRef = ref(setrow);
-
-    // get the pastSet
-    const pastMonthset = [];
-    for (let i = 0; i < firstDayWeek.value; i++) {
-      const pastValue = numOfPreDate - (firstDayWeek.value - i) + 1;
-      pastMonthset.push(pastValue);
-    }
-
-    // get future set
-    let allSet = [...pastMonthset, ...currentSet];
-    if (isRest !== 0) {
-      const lastLen = Array.from({ length: isRest }, (_, i) => i + 1);
-      allSet = [...allSet, ...lastLen];
-    }
     const allSetRef = ref(allSet);
 
     return {
