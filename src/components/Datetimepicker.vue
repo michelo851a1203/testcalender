@@ -76,8 +76,8 @@ export default {
     const selectDateRef = ref(current.getDate());
 
     const changeContent = (weekLen, chooseYear, chooseMonth) => {
-      const numOfPreDate = new Date(chooseMonth, chooseYear - 1, 0).getDate();
-      const numOfCurrentDate = new Date(chooseMonth, chooseYear, 0).getDate();
+      const numOfPreDate = new Date(chooseYear, chooseMonth - 1, 0).getDate();
+      const numOfCurrentDate = new Date(chooseYear, chooseMonth, 0).getDate();
       const currentSet = Array.from(
         { length: numOfCurrentDate },
         (_, i) => i + 1
