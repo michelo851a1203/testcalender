@@ -56,9 +56,11 @@
               <td class="text-center" v-for="col in week.length" :key="col">
                 <div
                   @click="dateClick(allSetRef[(col - 1) + (row - 1) * week.length])"
-                  class="mx-auto rounded-full w-6 h-6 transition duration-300 ease-in-out hover:bg-blue-300 hover:shadow-2xl cursor-pointer"
-                  :class="{ 'bg-red-300': currentDateRef === allSetRef[(col - 1) + (row - 1) * week.length] && currentYearRef === selectYearRef && currentMonthRef === selectMonthRef }"
-                >{{ allSetRef[(col - 1) + (row - 1) * week.length] }}</div>
+                  class="mx-auto rounded-full w-6 h-6 transition duration-100 ease-in-out hover:bg-blue-300 hover:shadow-2xl cursor-pointer"
+                  :class="{ 'bg-red-300': currentDateRef === allSetRef[(col - 1) + (row - 1) * week.length] && currentYearRef === selectYearRef && currentMonthRef === selectMonthRef,
+                  'text-gray-600':allSetRef[(col - 1) + (row - 1) * week.length].status !== 'Now'
+                  }"
+                >{{ allSetRef[(col - 1) + (row - 1) * week.length].mainDate }}</div>
               </td>
             </tr>
           </tbody>
@@ -110,10 +112,12 @@ export default {
     const changeContent = (weekLen, chooseYear, chooseMonth) => {
       const numOfPreDate = new Date(chooseYear, chooseMonth - 1, 0).getDate();
       const numOfCurrentDate = new Date(chooseYear, chooseMonth, 0).getDate();
-      const currentSet = Array.from(
-        { length: numOfCurrentDate },
-        (_, i) => i + 1
-      );
+      const currentSet = Array.from({ length: numOfCurrentDate }, (_, i) => {
+        return {
+          mainDate: i + 1,
+          status: "Now",
+        };
+      });
 
       // get first day of month is on what week
       const initDate = new Date();
@@ -134,17 +138,23 @@ export default {
       const pastMonthset = [];
       for (let i = 0; i < firstDayWeek; i++) {
         const pastValue = numOfPreDate - (firstDayWeek - i) + 1;
-        pastMonthset.push(pastValue);
+        pastMonthset.push({
+          mainDate: pastValue,
+          status: "prev",
+        });
       }
 
       let allSet = [...pastMonthset, ...currentSet];
 
       if (isRest !== 0) {
-        const lastLen = Array.from({ length: isRest }, (_, i) => i + 1);
+        const lastLen = Array.from({ length: isRest }, (_, i) => {
+          return {
+            mainDate: i + 1,
+            status: "next",
+          };
+        });
         allSet = [...allSet, ...lastLen];
       }
-
-      // this place need to change data format solution.
 
       return {
         firstDayWeek,
@@ -165,11 +175,21 @@ export default {
     };
 
     const dateClick = (iData) => {
+      let chooseMonth = selectMonthRef.value;
+      if (iData.status === "prev") {
+        chooseMonth = chooseMonth === 1 ? 12 : chooseMonth - 1;
+      }
+      if (iData.status === "next") {
+        chooseMonth = chooseMonth === 12 ? 1 : chooseMonth + 1;
+      }
+
       const mainMonth =
-        `${selectMonthRef.value}`.length === 1
-          ? `0${selectMonthRef.value}`
-          : `${selectMonthRef.value}`;
-      const mainDate = `${iData}`.length === 1 ? `0${iData}` : `${iData}`;
+        `${chooseMonth}`.length === 1 ? `0${chooseMonth}` : `${chooseMonth}`;
+
+      const mainDate =
+        `${iData.mainDate}`.length === 1
+          ? `0${iData.mainDate}`
+          : `${iData.mainDate}`;
       const dateFmt = `${selectYearRef.value}-${mainMonth}-${mainDate}`;
       emit("update:maintext", dateFmt);
     };
