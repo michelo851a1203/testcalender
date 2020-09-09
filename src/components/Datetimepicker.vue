@@ -77,6 +77,17 @@
 </template>
 
 <script>
+// ============================================================================
+// <datetimepicker
+//       @isinner="testClick"
+//       v-model:isShowCalender="isShowCalenderRef"
+//       v-model:maintext="mainDataRef"
+// ></datetimepicker>
+
+// isinner : tell if showCandler from inner
+// maintext : Date Format
+// isShowCalenderRef : is show Calender content
+// ============================================================================
 import { ref, watch } from "vue";
 export default {
   name: "datetimepicker",
@@ -86,7 +97,7 @@ export default {
       type: String,
       default: "",
     },
-    // show calender control 
+    // show calender control
     isShowCalender: {
       type: Boolean,
       default: false,
@@ -110,6 +121,7 @@ export default {
 
     const isHoverCalender = (hover) => {
       emit("update:isShowCalender", hover);
+      emit("isinner", true);
       if (!hover) {
         const expTest = /^\d{4}-\d{2}-\d{2}$/g.test(props.maintext);
         if (!expTest && props.maintext !== "") {

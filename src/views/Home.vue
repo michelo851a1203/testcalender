@@ -1,7 +1,11 @@
 <template>
-  <div class="home" @click="removeFunc">
+  <div class="home">
     <!-- <button @click="removeFunc" class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded">測試內容</button> -->
-    <datetimepicker v-model:isShowCalender="isShowCalenderRef" v-model:maintext="mainDataRef"></datetimepicker>
+    <datetimepicker
+      @isinner="testClick"
+      v-model:isShowCalender="isShowCalenderRef"
+      v-model:maintext="mainDataRef"
+    ></datetimepicker>
   </div>
 </template>
 
@@ -17,11 +21,14 @@ export default {
   setup() {
     const mainDataRef = ref("");
     const isShowCalenderRef = ref(false);
+    const testClick = (inner) => {
+      console.log(inner);
+    };
 
     const removeFunc = () => {
       isShowCalenderRef.value = false;
     };
-    return { mainDataRef, isShowCalenderRef, removeFunc };
+    return { mainDataRef, isShowCalenderRef, removeFunc, testClick };
   },
 };
 </script>
