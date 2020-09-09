@@ -16,7 +16,7 @@
               />
             </svg>
           </div>
-          <div class="select-none rounded px-2 py-1 shadow-lg mx-4">{{ currentYearRef }}</div>
+          <div class="select-none rounded px-2 py-1 shadow-lg mx-4">{{ selectYearRef }}</div>
           <div class="cursor-pointer" @click="switchYear('next')">
             <svg class="w-3" viewBox="0 0 100 100">
               <polyline
@@ -32,7 +32,7 @@
         </div>
         <div>
           <label class="mr-2" for>month</label>
-          <select v-model="currentMonthRef" class="border rounded border-gray-500 px-2 py-1">
+          <select v-model="selectMonthRef" class="border rounded border-gray-500 px-2 py-1">
             <option v-for="item in 12" :key="item" class="bg-white" :value="item">{{ item }}</option>
           </select>
         </div>
@@ -48,7 +48,7 @@
             <td class="text-center" v-for="col in week.length" :key="col">
               <div
                 class="mx-auto rounded-full w-6 h-6 transition duration-300 ease-in-out hover:bg-blue-300 hover:shadow-2xl cursor-pointer"
-                :class="{ 'bg-red-300': currentDateRef === allSetRef[(col - 1) + (row - 1) * week.length] }"
+                :class="{ 'bg-red-300': currentDateRef === allSetRef[(col - 1) + (row - 1) * week.length] && currentYearRef === selectYearRef && currentMonthRef === selectMonthRef }"
               >{{ allSetRef[(col - 1) + (row - 1) * week.length] }}</div>
             </td>
           </tr>
@@ -70,6 +70,10 @@ export default {
     const currentYearRef = ref(current.getFullYear());
     const currentMonthRef = ref(current.getMonth() + 1);
     const currentDateRef = ref(current.getDate());
+
+    const selectYearRef = ref(current.getFullYear());
+    const selectMonthRef = ref(current.getMonth() + 1);
+    const selectDateRef = ref(current.getDate());
 
     const changeContent = (weekLen, chooseYear, chooseMonth) => {
       const numOfPreDate = new Date(chooseMonth, chooseYear - 1, 0).getDate();
@@ -107,6 +111,7 @@ export default {
         const lastLen = Array.from({ length: isRest }, (_, i) => i + 1);
         allSet = [...allSet, ...lastLen];
       }
+
       return {
         firstDayWeek,
         setrow,
@@ -116,39 +121,39 @@ export default {
 
     const switchYear = (cmd) => {
       if (cmd === "prev") {
-        currentYearRef.value = currentYearRef.value - 1;
+        selectYearRef.value = selectYearRef.value - 1;
         return;
       }
       if (cmd === "next") {
-        currentYearRef.value = currentYearRef.value + 1;
+        selectYearRef.value = selectYearRef.value + 1;
         return;
       }
     };
 
     const { setrow, allSet } = changeContent(
       week.value.length,
-      currentYearRef.value,
-      currentMonthRef.value
+      selectYearRef.value,
+      selectMonthRef.value
     );
 
     const setrowRef = ref(setrow);
     const allSetRef = ref(allSet);
 
     // change changeContent still have problem
-    watch(currentYearRef, (val) => {
+    watch(selectYearRef, (val) => {
       const { setrow, allSet } = changeContent(
         week.value.length,
         val,
-        currentMonthRef.value
+        selectMonthRef.value
       );
       setrowRef.value = setrow;
       allSetRef.value = allSet;
     });
 
-    watch(currentMonthRef, (val) => {
+    watch(selectMonthRef, (val) => {
       const { setrow, allSet } = changeContent(
         week.value.length,
-        currentYearRef.value,
+        selectYearRef.value,
         val
       );
       setrowRef.value = setrow;
@@ -157,6 +162,9 @@ export default {
 
     return {
       switchYear,
+      selectYearRef,
+      selectMonthRef,
+      selectDateRef,
       currentYearRef,
       currentMonthRef,
       currentDateRef,
