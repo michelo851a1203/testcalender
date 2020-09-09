@@ -1,15 +1,15 @@
 <template>
   <div>
     <input
+      ref="datetimeInput"
       :value="maintext"
       @input="inputData"
       @focus="isHoverCalender(true)"
-      @blur="isHoverCalender(false,$event)"
       class="border px-2 py-1 border-gray-600 rounded"
       type="text"
     />
     <transition name="fade">
-      <div v-if="isShowCalender" class="calenderBorder">
+      <div v-if="isShowCalender" @mouseleave="isHoverCalender(false)" class="calenderBorder">
         <div class="flex items-center justify-around mb-2">
           <div class="flex items-center select-none">
             <div class="cursor-pointer" @click="switchYear('prev')">
@@ -57,7 +57,7 @@
                 <div
                   @click="dateClick(allSetRef[(col - 1) + (row - 1) * week.length])"
                   class="mx-auto rounded-full w-6 h-6 transition duration-100 ease-in-out hover:bg-blue-300 hover:shadow-2xl cursor-pointer"
-                  :class="{ 'bg-red-300': currentDateRef === allSetRef[(col - 1) + (row - 1) * week.length] && currentYearRef === selectYearRef && currentMonthRef === selectMonthRef,
+                  :class="{ 'bg-red-300': currentDateRef === allSetRef[(col - 1) + (row - 1) * week.length].mainDate && currentYearRef === selectYearRef && currentMonthRef === selectMonthRef,
                   'text-gray-600':allSetRef[(col - 1) + (row - 1) * week.length].status !== 'Now'
                   }"
                 >{{ allSetRef[(col - 1) + (row - 1) * week.length].mainDate }}</div>
@@ -84,7 +84,7 @@ export default {
     const week = ref(["Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat."]);
     // get days of month
     const current = new Date();
-
+    const datetimeInput = ref(null);
     const isShowCalender = ref(false);
     const currentYearRef = ref(current.getFullYear());
     const currentMonthRef = ref(current.getMonth() + 1);
@@ -97,15 +97,16 @@ export default {
       emit("update:maintext", e.target.value);
     };
 
-    const isHoverCalender = (hover, event) => {
+    const isHoverCalender = (hover) => {
       isShowCalender.value = hover;
       if (!hover) {
         const expTest = /^\d{4}-\d{2}-\d{2}$/g.test(props.maintext);
-        if (!expTest && event.target.value !== "") {
+        if (!expTest && props.maintext !== "") {
           window.alert("not correspond to dateformat");
           emit("update:maintext", "");
-          event.target.value = "";
+          datetimeInput.value.value = "";
         }
+        datetimeInput.value.blur();
       }
     };
 
@@ -192,6 +193,7 @@ export default {
           : `${iData.mainDate}`;
       const dateFmt = `${selectYearRef.value}-${mainMonth}-${mainDate}`;
       emit("update:maintext", dateFmt);
+      isHoverCalender(false);
     };
 
     const { setrow, allSet } = changeContent(
@@ -225,6 +227,7 @@ export default {
     });
 
     return {
+      datetimeInput,
       inputData,
       isShowCalender,
       isHoverCalender,
