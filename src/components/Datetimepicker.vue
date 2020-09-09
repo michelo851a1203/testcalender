@@ -81,9 +81,15 @@ import { ref, watch } from "vue";
 export default {
   name: "datetimepicker",
   props: {
+    // dateFmt text in textbox
     maintext: {
       type: String,
       default: "",
+    },
+    // show calender control 
+    isShowCalender: {
+      type: Boolean,
+      default: false,
     },
   },
   setup(props, { emit }) {
@@ -91,7 +97,6 @@ export default {
     // get days of month
     const current = new Date();
     const datetimeInput = ref(null);
-    const isShowCalender = ref(false);
     const currentYearRef = ref(current.getFullYear());
     const currentMonthRef = ref(current.getMonth() + 1);
     const currentDateRef = ref(current.getDate());
@@ -104,7 +109,7 @@ export default {
     };
 
     const isHoverCalender = (hover) => {
-      isShowCalender.value = hover;
+      emit("update:isShowCalender", hover);
       if (!hover) {
         const expTest = /^\d{4}-\d{2}-\d{2}$/g.test(props.maintext);
         if (!expTest && props.maintext !== "") {
@@ -240,7 +245,6 @@ export default {
     return {
       datetimeInput,
       inputData,
-      isShowCalender,
       isHoverCalender,
       clearCalender,
       switchYear,
