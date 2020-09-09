@@ -65,6 +65,12 @@
             </tr>
           </tbody>
         </table>
+        <div class="mx-auto mt-4 w-11/12 sm:hidden">
+          <button
+            @click="clearCalender(false)"
+            class="w-full bg-blue-300 hover:bg-blue-500 text-white font-medium py-2 px-4 rounded"
+          >clear</button>
+        </div>
       </div>
     </transition>
   </div>
@@ -108,6 +114,12 @@ export default {
         }
         datetimeInput.value.blur();
       }
+    };
+
+    const clearCalender = () => {
+      isHoverCalender(false);
+      emit("update:maintext", "");
+      datetimeInput.value.value = "";
     };
 
     const changeContent = (weekLen, chooseYear, chooseMonth) => {
@@ -205,7 +217,6 @@ export default {
     const setrowRef = ref(setrow);
     const allSetRef = ref(allSet);
 
-    // change changeContent still have problem
     watch(selectYearRef, (val) => {
       const { setrow, allSet } = changeContent(
         week.value.length,
@@ -231,6 +242,7 @@ export default {
       inputData,
       isShowCalender,
       isHoverCalender,
+      clearCalender,
       switchYear,
       dateClick,
       selectYearRef,
@@ -248,8 +260,16 @@ export default {
 
 <style scoped lang="postcss">
 .calenderBorder {
-  @apply mt-1 ml-1 py-4 rounded bg-gray-300 shadow-xl;
-  max-width: 20rem;
+  @apply mt-1  py-4 rounded bg-gray-300 shadow-xl fixed w-full;
+  bottom: 0;
+}
+
+@media only screen and (min-width: theme(screens.sm)) {
+  .calenderBorder {
+    @apply ml-1;
+    bottom: unset;
+    max-width: 20rem;
+  }
 }
 .fade-enter-active,
 .fade-leave-active {
