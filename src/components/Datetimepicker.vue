@@ -245,7 +245,7 @@ export default {
 
 <style scoped lang="postcss">
 .calenderBorder {
-  @apply py-4 rounded bg-gray-300 shadow-xl;
+  @apply mt-1 ml-1 py-4 rounded bg-gray-300 shadow-xl;
   max-width: 20rem;
 }
 .fade-enter-active,
