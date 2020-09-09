@@ -2,8 +2,9 @@
   <div>
     <input
       :value="maintext"
+      @input="inputData"
       @focus="isHoverCalender(true)"
-      @blur="isHoverCalender(false)"
+      @blur="isHoverCalender(false,$event)"
       class="border px-2 py-1 border-gray-600 rounded"
       type="text"
     />
@@ -90,8 +91,20 @@ export default {
     const selectYearRef = ref(current.getFullYear());
     const selectMonthRef = ref(current.getMonth() + 1);
 
-    const isHoverCalender = (hover) => {
+    const inputData = (e) => {
+      emit("update:maintext", e.target.value);
+    };
+
+    const isHoverCalender = (hover, event) => {
       isShowCalender.value = hover;
+      if (!hover) {
+        const expTest = /^\d{4}-\d{2}-\d{2}$/g.test(props.maintext);
+        if (!expTest && event.target.value !== "") {
+          window.alert("not correspond to dateformat");
+          emit("update:maintext", "");
+          event.target.value = "";
+        }
+      }
     };
 
     const changeContent = (weekLen, chooseYear, chooseMonth) => {
@@ -192,6 +205,7 @@ export default {
     });
 
     return {
+      inputData,
       isShowCalender,
       isHoverCalender,
       switchYear,
